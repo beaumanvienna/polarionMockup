@@ -1,0 +1,31 @@
+/bin/
+/bin-int/
+Makefile
+Makefile.in
+Makefile.*
+build
+*.make
+*.d
+*.a
+*.o
+/config.json
+/keys.json
+/keys.json.enc
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Python build artifacts
+*.pyd
+*.so
+*.dll
+*.dylib
+
+compile_commands.json
+.cache/
+vendor/curl/lib/curl_config.h
+queue
+log/*
+*.tsbuildinfo

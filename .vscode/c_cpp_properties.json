@@ -1,0 +1,37 @@
+{
+    "configurations": [
+        {
+            "name": "conf1",
+            "includePath":
+            [
+                "application",
+                "engine",
+                "vendor",
+                "vendor/spdlog/include",
+                "vendor/curl/include",
+				"vendor/thread-pool/include",
+				"vendor/tracy/include",
+				"vendor/openssl",
+				"vendor/openssl/include",
+				"vendor/openssl/providers/common/include",
+				"vendor/openssl/providers/implementations/include",
+				"vendor/openssl/providers/fips/include",
+				"vendor/openssl/engines",
+				"vendor/crow/include/crow",
+				"vendor/asio/asio/include",
+                "/usr/include/python3.12/"
+            ],
+            "defines": 
+            [
+                "ZoneScopedNC(x,y)",
+                "ZoneScopedN(x)",
+                "ZoneTransientN(x, y, z)",
+				"JARVIS_AGENT_VERSION"
+			],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
