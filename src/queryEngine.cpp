@@ -17,14 +17,13 @@ namespace PolarionMockup
     {
         if (root == nullptr)
         {
-            return true;  // null query matches everything
+            return true; // null query matches everything
         }
         return Evaluate(root, item);
     }
 
-    std::vector<const WorkItem*> QueryEngine::Filter(
-        const std::string& queryString,
-        const std::vector<const WorkItem*>& items) const
+    std::vector<const WorkItem*> QueryEngine::Filter(const std::string& queryString,
+                                                     const std::vector<const WorkItem*>& items) const
     {
         QueryParser parser;
         auto root = parser.Parse(queryString);
@@ -112,8 +111,7 @@ namespace PolarionMockup
                 auto values = ResolveField(node->GetField(), item);
                 for (const auto& val : values)
                 {
-                    if (InRange(val, node->GetRangeLow(), node->GetRangeHigh(),
-                                node->IsRangeInclusive()))
+                    if (InRange(val, node->GetRangeLow(), node->GetRangeHigh(), node->IsRangeInclusive()))
                     {
                         return true;
                     }
@@ -129,24 +127,32 @@ namespace PolarionMockup
     // Field Resolution
     // ================================================================
 
-    std::vector<std::string> QueryEngine::ResolveField(
-        const std::string& field, const WorkItem& item) const
+    std::vector<std::string> QueryEngine::ResolveField(const std::string& field, const WorkItem& item) const
     {
         // Convert field name to lowercase for case-insensitive field matching
         std::string f = field;
-        std::transform(f.begin(), f.end(), f.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+        std::transform(f.begin(), f.end(), f.begin(), [](unsigned char c) { return std::tolower(c); });
 
-        if (f == "type")        return { item.GetWorkItemType() };
-        if (f == "status")      return { item.GetStatus() };
-        if (f == "title")       return { item.GetTitle() };
-        if (f == "severity")    return { item.GetSeverity() };
-        if (f == "priority")    return { item.GetPriority() };
-        if (f == "resolution")  return { item.GetResolution() };
-        if (f == "created")     return { item.GetCreated() };
-        if (f == "updated")     return { item.GetUpdated() };
-        if (f == "author")      return { item.GetAuthorId() };
-        if (f == "outlinenumber") return { item.GetOutlineNumber() };
+        if (f == "type")
+            return {item.GetWorkItemType()};
+        if (f == "status")
+            return {item.GetStatus()};
+        if (f == "title")
+            return {item.GetTitle()};
+        if (f == "severity")
+            return {item.GetSeverity()};
+        if (f == "priority")
+            return {item.GetPriority()};
+        if (f == "resolution")
+            return {item.GetResolution()};
+        if (f == "created")
+            return {item.GetCreated()};
+        if (f == "updated")
+            return {item.GetUpdated()};
+        if (f == "author")
+            return {item.GetAuthorId()};
+        if (f == "outlinenumber")
+            return {item.GetOutlineNumber()};
         if (f == "id")
         {
             // Return the short ID part (after projectId/)
@@ -154,9 +160,9 @@ namespace PolarionMockup
             auto slash = fullId.find('/');
             if (slash != std::string::npos)
             {
-                return { fullId.substr(slash + 1) };
+                return {fullId.substr(slash + 1)};
             }
-            return { fullId };
+            return {fullId};
         }
 
         // Multi-valued fields
@@ -172,19 +178,19 @@ namespace PolarionMockup
         // Description value
         if (f == "description" || f == "body")
         {
-            return { item.GetDescription().m_Value };
+            return {item.GetDescription().m_Value};
         }
 
         // Module / document
         if (f == "module" || f == "document")
         {
-            return { item.GetModuleId() };
+            return {item.GetModuleId()};
         }
 
         // Project
         if (f == "project")
         {
-            return { item.GetProjectId() };
+            return {item.GetProjectId()};
         }
 
         return {};
@@ -197,27 +203,47 @@ namespace PolarionMockup
     static std::string ToLower(const std::string& s)
     {
         std::string result = s;
-        std::transform(result.begin(), result.end(), result.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+        std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
         return result;
     }
 
     bool QueryEngine::MatchesValue(const std::string& fieldVal, const std::string& queryVal)
     {
-        return ToLower(fieldVal) == ToLower(queryVal);
+        // Lucene-style: match if the query value appears as a word/substring
+        // in the field value (case-insensitive).  This handles both
+        // exact fields (status:approved) and text fields (title:braking).
+        std::string lowerField = ToLower(fieldVal);
+        std::string lowerQuery = ToLower(queryVal);
+        return lowerField.find(lowerQuery) != std::string::npos;
     }
 
     bool QueryEngine::MatchesPrefix(const std::string& fieldVal, const std::string& prefix)
     {
+        // Lucene-style: match if any whitespace-delimited token in the
+        // field value starts with the prefix (case-insensitive).
         std::string lowerField = ToLower(fieldVal);
         std::string lowerPrefix = ToLower(prefix);
-        return lowerField.size() >= lowerPrefix.size() &&
-               lowerField.substr(0, lowerPrefix.size()) == lowerPrefix;
+
+        size_t i = 0;
+        while (i < lowerField.size())
+        {
+            // Skip whitespace
+            while (i < lowerField.size() && std::isspace(static_cast<unsigned char>(lowerField[i])))
+                ++i;
+            // Start of token
+            size_t start = i;
+            while (i < lowerField.size() && !std::isspace(static_cast<unsigned char>(lowerField[i])))
+                ++i;
+            size_t len = i - start;
+            if (len >= lowerPrefix.size() && lowerField.compare(start, lowerPrefix.size(), lowerPrefix) == 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
-    bool QueryEngine::InRange(const std::string& fieldVal,
-                              const std::string& low, const std::string& high,
-                              bool inclusive)
+    bool QueryEngine::InRange(const std::string& fieldVal, const std::string& low, const std::string& high, bool inclusive)
     {
         // Lexicographic comparison (works for ISO dates and numeric strings)
         std::string lv = ToLower(fieldVal);
