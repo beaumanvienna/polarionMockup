@@ -8,10 +8,34 @@
 #include <crow.h>
 #include <spdlog/spdlog.h>
 
+#include <cstring>
+#include <iostream>
+
 using Ser = PolarionMockup::JsonApiSerializer;
 
 int main(int argc, char* argv[])
 {
+    for (int i = 1; i < argc; ++i)
+    {
+        if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0)
+        {
+            std::cout << "PolarionMockup v" << MOCKUP_VERSION << "\n"
+                      << "Lightweight REST API server emulating Siemens Polarion ALM.\n\n"
+                      << "Usage: mockup [options]\n\n"
+                      << "Options:\n"
+                      << "  -h, --help       Show this help message and exit\n"
+                      << "  -v, --version    Show version and exit\n\n"
+                      << "The server listens on http://0.0.0.0:18080 and requires\n"
+                      << "Bearer token authentication (Authorization: Bearer <token>).\n";
+            return 0;
+        }
+        if (std::strcmp(argv[i], "--version") == 0 || std::strcmp(argv[i], "-v") == 0)
+        {
+            std::cout << "PolarionMockup v" << MOCKUP_VERSION << "\n";
+            return 0;
+        }
+    }
+
     spdlog::set_level(spdlog::level::info);
     spdlog::info("PolarionMockup v{} starting", MOCKUP_VERSION);
 
