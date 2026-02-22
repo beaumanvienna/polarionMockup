@@ -29,3 +29,10 @@ vendor/curl/lib/curl_config.h
 queue
 log/*
 *.tsbuildinfo
+.vs
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+vendor/openssl/bin
+vendor/openssl/bin-int
