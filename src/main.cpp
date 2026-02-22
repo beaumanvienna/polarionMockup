@@ -344,7 +344,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/workitems/<wiId>  (delete single)
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/workitems/<string>")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId,
                                         const std::string& workItemId)
             {
@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/workitems  (bulk delete)
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/workitems")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId)
             {
                 if (!Authenticate(req))
@@ -548,7 +548,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/workitems/<wiId>/linkedworkitems/<linkedProjId>/<linkedWiId>
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/workitems/<string>/linkedworkitems/<string>/<string>")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId,
                                         const std::string& workItemId, const std::string& linkedProjId,
                                         const std::string& linkedWiId)
@@ -664,7 +664,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/workitems/<wiId>/comments/<commentId>
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/workitems/<string>/comments/<string>")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId,
                                         const std::string& workItemId, const std::string& commentId)
             {
@@ -750,7 +750,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/workitems/<wiId>/attachments/<attachmentId>
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/workitems/<string>/attachments/<string>")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId,
                                         const std::string& workItemId, const std::string& attachmentId)
             {
@@ -857,7 +857,7 @@ int main(int argc, char* argv[])
     // DELETE /projects/<id>/collections/<colId>
     // =============================================================
     CROW_ROUTE(app, "/polarion/rest/v1/projects/<string>/collections/<string>")
-        .methods(crow::HTTPMethod::DELETE)(
+        .methods(crow::HTTPMethod::Delete)(
             [&Authenticate, &dataStore](const crow::request& req, const std::string& projectId,
                                         const std::string& collectionId)
             {
